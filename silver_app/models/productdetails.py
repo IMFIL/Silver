@@ -6,3 +6,4 @@ class ProductDetails(models.Model):
     amount = models.DecimalField(max_digits=12, decimal_places=2)
     url = models.URLField()
     source = models.TextField()
+    
