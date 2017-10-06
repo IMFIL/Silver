@@ -1,27 +1,18 @@
 from abc import ABC, abstractmethod
 
+
 class Scrapers(ABC):
 
     @abstractmethod
-    def __init__(self, url):
-        self.url = url
+    def __init__(self, search_term):
+        self.search_term = search_term
 
     @abstractmethod
     @property
     def products(self):
-        if self.products == None:
-            pass
-        else:
-            pass
-
-    @property
-    def scraper_url(self):
-        return self.url
-
-    @abstractmethod
-    def fetch_products(self):
         pass
 
     @abstractmethod
-    def getHTML(self):
+    @property
+    def html(self):
         pass
