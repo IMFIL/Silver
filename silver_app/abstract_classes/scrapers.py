@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class Scrapers(ABC):
 
     @abstractmethod
@@ -17,10 +18,6 @@ class Scrapers(ABC):
     @property
     def scraper_url(self):
         return self.url
-
-    @abstractmethod
-    def fetch_products(self):
-        pass
 
     @abstractmethod
     def getHTML(self):
