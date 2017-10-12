@@ -11,22 +11,21 @@ class EbayScraper(Scrapers) :
     def __init__(self,search_term):
         self.search_term = search_term
         self.ebay_main_page = "https://www.ebay.com/sch/"
-        search_with_spaces = self.search_term.replace(" ","%20")
-        self.ebay_search_page = self.ebay_main_page + search_with_spaces
-        self.ebay_HTML_content = requests.get(self.ebay_search_page).text
-        self.API_url = "http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=FilipSla-Silver-PRD-e5d865283-eb1981df&REST-PAYLOAD&keywords="+search_with_spaces+"&RESPONSE-DATA-FORMAT=JSON"
+        self.ebay_search_page = '{}{}'.format(self.ebay_main_page, self.search_term.replace(" ","%20"))
+        self.ebay_html_content = requests.get(self.ebay_search_page).text
+        self.api_url = '{}{}'.format("http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=FilipSla-Silver-PRD-e5d865283-eb1981df&REST-PAYLOAD&RESPONSE-DATA-FORMAT=JSON&keywords=",self.search_term.replace(" ","%20"))
 
 
-    def products(self, useAPI = True):
+    def products(self, use_api = True):
 
-        if useAPI:
+        if use_api:
             try:
-                API_request = requests.get(self.API_url)
+                api_request = requests.get(self.api_url)
+                api_json_response = json.loads(json.dumps(api_request.json()))
             except Exception as exception:
                 return self.products(False)
 
-            API_Json_response = json.loads(json.dumps(API_request.json()))
-            item_from_request = API_Json_response["findItemsByKeywordsResponse"][0]["searchResult"][0]["item"]
+            item_from_request = api_json_response["findItemsByKeywordsResponse"][0]["searchResult"][0]["item"]
             products_array = []
 
             for item in item_from_request:
@@ -44,7 +43,7 @@ class EbayScraper(Scrapers) :
 
             return products_array
         else:
-            ebay_soup = BeautifulSoup(self.ebay_HTML_content, "html.parser")
+            ebay_soup = BeautifulSoup(self.ebay_html_content, "html.parser")
             results_ul = ebay_soup.find_all(id="ListViewInner")
             result_items = []
 
@@ -59,27 +58,25 @@ class EbayScraper(Scrapers) :
 
             for item in result_items:
                 if not isinstance (item, NavigableString):
-                    if item.find_all("h3",{"class":"lvtitle"}) == []:
+                    if item.find("h3",{"class":"lvtitle"}) == None:
                         continue
-                    title =item.find_all("h3",{"class":"lvtitle"})[0]
+                    title =item.find("h3",{"class":"lvtitle"})
                     name = title.text.strip()
-                    image = item.find_all("div",{"class":"lvpicinner"})[0].find_all("img")[0].get("src")
+                    image = item.find("div",{"class":"lvpicinner"}).find("img").get("src")
                     category = ""
 
                     categoryInstance = db.Category(name=category)
                     product = db.Product(name=name, category=categoryInstance, image=image)
 
                     url =  title.find("a").get("href")
-                    price = item.find_all("li", {"class":"lvprice"})[0].text.strip()
+                    price = item.find("li", {"class":"lvprice"}).text.strip()
 
                     product_details = db.ProductDetails(product=product, amount=price, url=url, source="Ebay")
 
                     products_array.append(product_details)
 
-                else:
-                    continue
 
             return products_array
 
     def html(self):
-        return self.ebay_HTML_content
+        return self.ebay_html_content
