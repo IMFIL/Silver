@@ -25,7 +25,6 @@ class EbayScraper(Scrapers) :
 
     def products(self, useAPI = True):
 
-
         if useAPI:
             try:
                 API_request = requests.get(self.API_url)
@@ -36,17 +35,18 @@ class EbayScraper(Scrapers) :
             item_from_request = API_Json_response["findItemsByKeywordsResponse"][0]["searchResult"][0]["item"]
             products_array = []
 
-            # for item in item_from_request:
-            #     name = item["title"]
-            #     category = ""
-            #     image = item["galleryURL"]
-            #     price = item["sellingStatus"][0]
-            #     products_array.append()
+            for item in item_from_request:
+                name = item["title"]
+                category = ""
+                image = item["galleryURL"]
 
-            print item_from_request
+                categoryInstance = db.Category(category)
+                product = db.Product(name,categoryInstance,image)
 
+                price = item["sellingStatus"][0]["currentPrice"][0]["__value__"]
 
-
+                product_detail = db.ProductDetails()
+                products_array.append({"name":name, "category":category, "image":image, "price":price})
 
 
         else:
@@ -82,7 +82,3 @@ class EbayScraper(Scrapers) :
 
     def html(self):
         return self.ebay_HTML_content
-
-
-scraper = EbayScraper("Bubble Gum")
-scraper.products()
