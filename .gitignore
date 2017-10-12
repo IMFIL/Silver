@@ -1,3 +1,4 @@
 secret_config.py
 *.csv
 *.pyc
+*.sqlite3
