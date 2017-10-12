@@ -40,8 +40,8 @@ class EbayScraper(Scrapers) :
                 category = ""
                 image = item["galleryURL"]
 
-                categoryInstance = db.Category(category)
-                product = db.Product(name,categoryInstance,image)
+                categoryInstance = db.Category(name=category)
+                product = db.Product(name=name,category=categoryInstance,image)
 
                 price = item["sellingStatus"][0]["currentPrice"][0]["__value__"]
 
