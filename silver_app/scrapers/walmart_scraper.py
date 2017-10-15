@@ -5,7 +5,9 @@ import requests
 from silver_app.abstract_classes.scrapers import Scrapers
 import silver_app.models as db
 
-class walmartScraper(Scrapers):
+#TODO implement Categories
+
+class WalmartScraper(Scrapers):
 
     def __init__(self,search_term):
             self.search_term = search_term
@@ -21,6 +23,8 @@ class walmartScraper(Scrapers):
             try:
                 api_request = requests.get(self.api_url)
                 api_json_response = json.loads(json.dumps(api_request.json()))
+                if api_json_response["totalResults"] < 1:
+                    return []
             except Exception as exception:
                 return self.products(False)
 
@@ -44,6 +48,10 @@ class walmartScraper(Scrapers):
         else:
             walmart_soup = BeautifulSoup(self.walmart_html_content, "html.parser")
             results_div = walmart_soup.find_all("div","search-result-listview-items")
+
+            if len(results_div) < 1:
+                return []
+
             result_items = []
 
             if len(results_div) > 1:
@@ -58,11 +66,40 @@ class walmartScraper(Scrapers):
             for item in result_items:
                 if not isinstance (item, NavigableString):
                     link = item.find("a","product-title-link")
-                    name = link.find("span").text
+
+                    if link is None:
+                        continue
+
+                    nameSpan = link.find("span")
+
+                    if nameSpan is None:
+                        continue
+
+                    name = nameSpan.text
                     url = '{}{}'.format(self.walmart_root_url, link.get("href"))
                     item_content_div = item.find("div","tile-primary")
-                    price = item_content_div.find("span","Price-group").get("title")
-                    image = item.find("div","search-result-productimage").find("img","Tile-img").get("src")[2:]
+
+                    if item_content_div is None:
+                        continue
+
+                    priceSpan = item_content_div.find("span","Price-group")
+
+                    if priceSpan is None:
+                        continue
+
+                    price = priceSpan.get("title")
+
+                    imageDiv = item.find("div","search-result-productimage")
+
+                    if imageDiv is None:
+                        continue
+
+                    imageContent = imageDiv.find("img","Tile-img")
+
+                    if imageContent is None:
+                        continue
+
+                    image = imageContent.get("src")[2:]
                     category = ""
 
                     categoryInstance = db.Category(name=category)

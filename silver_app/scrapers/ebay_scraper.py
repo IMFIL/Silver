@@ -5,6 +5,7 @@ import requests
 from silver_app.abstract_classes.scrapers import Scrapers
 import silver_app.models as db
 
+#TODO implement Categories
 
 class EbayScraper(Scrapers) :
 
@@ -22,6 +23,8 @@ class EbayScraper(Scrapers) :
             try:
                 api_request = requests.get(self.api_url)
                 api_json_response = json.loads(json.dumps(api_request.json()))
+                if int(api_json_response["findItemsByKeywordsResponse"][0]["searchResult"][0]["@count"]) < 1:
+                    return []
             except Exception as exception:
                 return self.products(False)
 
@@ -45,6 +48,10 @@ class EbayScraper(Scrapers) :
         else:
             ebay_soup = BeautifulSoup(self.ebay_html_content, "html.parser")
             results_ul = ebay_soup.find_all(id="ListViewInner")
+
+            if len(results_ul) < 1:
+                return []
+
             result_items = []
 
             if len(results_ul) > 1:
@@ -58,18 +65,18 @@ class EbayScraper(Scrapers) :
 
             for item in result_items:
                 if not isinstance (item, NavigableString):
-                    if item.find("h3",{"class":"lvtitle"}) == None:
+                    if item.find("h3", "lvtitle") == None:
                         continue
-                    title =item.find("h3",{"class":"lvtitle"})
+                    title =item.find("h3", "lvtitle")
                     name = title.text.strip()
-                    image = item.find("div",{"class":"lvpicinner"}).find("img").get("src")
+                    image = item.find("div", "lvpicinner").find("img").get("src")
                     category = ""
 
                     categoryInstance = db.Category(name=category)
                     product = db.Product(name=name, category=categoryInstance, image=image)
 
                     url =  title.find("a").get("href")
-                    price = item.find("li", {"class":"lvprice"}).text.strip()
+                    price = item.find("li", "lvprice").text.strip()
 
                     product_details = db.ProductDetails(product=product, amount=price, url=url, source="Ebay")
 
