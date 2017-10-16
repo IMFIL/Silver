@@ -11,10 +11,10 @@ class EbayScraper(Scrapers) :
 
     def __init__(self,search_term):
         self.search_term = search_term
-        self.ebay_main_page = "https://www.ebay.com/sch/"
+        self.ebay_main_page = "https://www.ebay.ca/sch/"
         self.ebay_search_page = '{}{}'.format(self.ebay_main_page, self.search_term.replace(" ","%20"))
         self.ebay_html_content = requests.get(self.ebay_search_page).text
-        self.api_url = '{}{}'.format("http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=FilipSla-Silver-PRD-e5d865283-eb1981df&REST-PAYLOAD&RESPONSE-DATA-FORMAT=JSON&keywords=",self.search_term.replace(" ","%20"))
+        self.api_url = '{}{}'.format("http://svcs.ebay.com/services/search/FindingService/v1?OPERATION-NAME=findItemsByKeywords&SERVICE-VERSION=1.0.0&SECURITY-APPNAME=FilipSla-Silver-PRD-e5d865283-eb1981df&REST-PAYLOAD&RESPONSE-DATA-FORMAT=JSON&GLOBAL-ID=2&keywords=",self.search_term.replace(" ","%20"))
 
 
     def products(self, use_api = True):
