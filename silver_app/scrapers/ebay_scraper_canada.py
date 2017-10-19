@@ -41,7 +41,7 @@ class EbayScraper(Scrapers) :
 
                 price = item["sellingStatus"][0]["currentPrice"][0]["__value__"]
                 url = item["viewItemURL"][0]
-                product_details = db.ProductDetails(product=product, amount=price, url=url, source="Ebay")
+                product_details = db.ProductDetails(product=product, amount=price, url=url, source="Ebay", country="Canada")
                 products_array.append(product_details)
 
             return products_array
@@ -78,7 +78,7 @@ class EbayScraper(Scrapers) :
                     url =  title.find("a").get("href")
                     price = item.find("li", "lvprice").text.strip()
 
-                    product_details = db.ProductDetails(product=product, amount=price, url=url, source="Ebay")
+                    product_details = db.ProductDetails(product=product, amount=price, url=url, source="Ebay", country="Canada")
 
                     products_array.append(product_details)
 

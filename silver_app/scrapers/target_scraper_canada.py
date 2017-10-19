@@ -34,7 +34,7 @@ class TargetScraper(Scrapers):
 
             categoryInstance = db.Category(name=category)
             product = db.Product(name=name, category=categoryInstance, image=image)
-            product_details = db.ProductDetails(product=product, amount=price, url=url, source="Target")
+            product_details = db.ProductDetails(product=product, amount=price, url=url, source="Target", country="Canada")
             products_array.append(product_details)
 
         return products_array

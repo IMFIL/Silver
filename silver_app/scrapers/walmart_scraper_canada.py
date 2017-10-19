@@ -2,10 +2,6 @@ import json
 
 import django
 from django.conf import settings
-
-settings.configure(DEBUG=True)
-django.setup()
-
 from bs4 import BeautifulSoup
 from bs4 import NavigableString
 import requests
@@ -29,7 +25,3 @@ class WalmartScraper(Scrapers):
 
     def html(self):
         return self.walmart_html_content
-
-
-wm = WalmartScraper("ps4")
-wm.products()

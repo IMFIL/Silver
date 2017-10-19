@@ -40,7 +40,7 @@ class WalmartScraper(Scrapers):
 
                 categoryInstance = db.Category(name=category)
                 product = db.Product(name=name, category=categoryInstance, image=image)
-                product_details = db.ProductDetails(product=product, amount=price, url=url, source="Walmart")
+                product_details = db.ProductDetails(product=product, amount=price, url=url, source="Walmart", country="US")
                 products_array.append(product_details)
 
             return products_array
@@ -104,7 +104,7 @@ class WalmartScraper(Scrapers):
 
                     categoryInstance = db.Category(name=category)
                     product = db.Product(name=name, category=categoryInstance, image=image)
-                    product_details = db.ProductDetails(product=product, amount=price, url=url, source="Walmart")
+                    product_details = db.ProductDetails(product=product, amount=price, url=url, source="Walmart", country="US")
                     products_array.append(product_details)
 
             return products_array
