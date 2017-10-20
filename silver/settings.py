@@ -38,7 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'silver_app'
+    'silver_app',
 ]
 
 MIDDLEWARE = [
@@ -86,6 +86,13 @@ DATABASES = {
     },
 }
 
+# If you don't want to drain Ben's bank account... 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': "mydatabase",
+#     },
+# }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
